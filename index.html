@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SIA PRO | Seguridad y Gestión</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+	  
+	body {
+    margin: 0; 
+    min-height: 100vh;
+    /* REEMPLAZA LAS LÍNEAS DE BACKGROUND POR ESTAS: */
+    background-image: url('img/hol.png'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    padding: 5px;
+}
+	  
+	  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Capa oscura al 40% para resaltar el texto */
+    z-index: -1;
+}
+    :root {
+        --primary: #4f46e5; --primary-light: #818cf8; --accent: #c084fc;
+        --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+        --glass: rgba(255, 255, 255, 0.85); --glass-border: rgba(255, 255, 255, 0.5);
+    }
+
+    /* --- BASE --- */
+    * { 
+        box-sizing: border-box; 
+        font-family: 'Inter', sans-serif; 
+        -webkit-tap-highlight-color: transparent; 
+    }
+    
+    
+
+    /* --- ESTRUCTURA Y VISTAS --- */
+    .app-container {
+    width: 100%;
+    max-width: 1300px;
+    padding: 5px 0;
+    opacity: 0;
+    
+}
+    .app-visible { opacity: 1; }
+    .hidden { display: none !important; }
+
+    
+    /* --- PANTALLA LOGIN --- */
+    #login-screen {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    /* Fondo Color Cielo (Gradient) */
+    background: linear-gradient(135deg, #87CEEB 0%, #00BFFF 100%); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 10000;
+}
+	 .glass-card {
+    background: rgb(255, 255, 255) !important; /* Cambia rgba por rgb para quitar la transparencia */
+    backdrop-filter: none !important; /* Quita el efecto de desenfoque de fondo */
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto de movimiento suave arriba y abajo */
+
+	  #login-screen input {
+    border: 2px solid #A1A1A1;
+    background: #f0f9ff;
+    transition: all 0.3s;
+}
+
+#login-screen input:focus {
+    border-color: #00BFFF;
+    box-shadow: 0 0 10px rgba(0, 191, 255, 0.2);
+}
+
+#login-screen .btn-primary {
+    background: #0284c7; /* Azul océano */
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+
+	  /* --- SPLASH SCREEN HORIZONTAL --- */
+#splash-screen {
+    position: fixed;
+    top: 0; left: 0; 
+    width: 100vw; 
+    height: 100vh;
+    background: #0f172a !important; /* Fuerza el color de fondo */
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center;
+    z-index: 999999 !important; /* Máxima prioridad sobre cualquier otra ventana */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s ease;
+}
+
+#splash-screen.hidden {
+    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loader-content {
+    width: 85%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.brand-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 3px;
+    margin-bottom: 30px;
+    text-transform: uppercase;
+}
+
+.progress-rail {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4f46e5, #06b6d4);
+    box-shadow: 0 0 15px rgba(79, 70, 229, 0.5);
+    transition: width 0.1s linear;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+#status-text { font-size: 12px; color: #94a3b8; }
+#load-val { font-size: 12px; color: #06b6d4; font-weight: 700; }
+
+    /* --- TABLAS ADAPTATIVAS --- */
+    .table-container { overflow-x: auto; border-radius: 8px; background: white; border: 1px solid #e2e8f0; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    th, td { border: 1px solid #e2e8f0; padding: 5px 3px; text-align: center; }
+    
+    #lista-alumnos td { padding: 2px 3px; height: 35px; }
+
+    .name-col { 
+        text-align: left; 
+        min-width: 110px; 
+        max-width: 140px;
+        position: sticky; 
+        left: 0; 
+        background: #f8fafc !important; 
+        z-index: 20; 
+        font-weight: 700; 
+        border-right: 2px solid #64748b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .week-0 { background-color: #ffffff; }
+    .week-1 { background-color: #f0fdf4; }
+    .week-2 { background-color: #eff6ff; }
+    .week-3 { background-color: #fefce8; }
+    .week-4 { background-color: #fff7ed; }
+
+    .badge { font-weight: 900; padding: 2px; border-radius: 4px; display: inline-block; width: 18px; height: 18px; color: white; font-size: 9px; line-height: 14px; }
+    .badge-p { background: var(--success); }
+    .badge-a { background: var(--danger); }
+    .badge-t { background: var(--warning); }
+    
+    .btn { 
+    padding: 10px; /* Un poco más de espacio para los dedos */
+    border-radius: 8px; 
+    border: none; 
+    font-weight: 700; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    gap: 4px; 
+    justify-content: center;
+    font-size: 13px; /* Un punto más grande */
+    transition: 0.2s;
+}
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-save { background: var(--success); color: white; width: 100%; font-size: 14px; padding: 12px; margin-top: 10px; }
+    .btn:active { transform: scale(0.95); }
+	  
+    input, select { 
+        padding: 8px 10px; 
+        border-radius: 8px; 
+        border: 1px solid #cbd5e1; 
+        width: 100%; 
+        font-size: 14px; 
+        outline: none;
+    }
+
+    .asistencia-options { display: flex; justify-content: center; gap: 5px; }
+    .asistencia-options label { display: flex; flex-direction: column; align-items: center; font-size: 8px; font-weight: 800; }
+    .asistencia-options input[type="radio"] { width: 14px; height: 14px; margin: 0; cursor: pointer; }
+
+    .opt-p { color: #059669; }
+    .opt-a { color: #dc2626; }
+    .opt-t { color: #d97706; }
+    
+    .header-wrapper { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .info-header-grid { color: #1e293b; font-size: 12px; line-height: 1.3; flex: 1; }
+    .info-header-grid b { color: var(--primary); text-transform: uppercase; font-size: 12px; margin-right: 4px; }
+	  .btn-exit { 
+    background: #dc2626 !important; 
+    color: white !important; 
+    font-weight: 800;
+    padding: 5px 15px;
+}
+.header-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+	  /* Estilo para el mensaje flotante de respaldo */
+#toast-respaldo {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    transform: translateY(150%);
+    transition: transform 0.5s ease-out(0.175, 0.885, 0.32, 1.275);
+}
+
+#toast-respaldo.show {
+    transform: translateY(0);
+}
+
+.toast-icon {
+    background: rgba(255,255,255,0.2);
+    padding: 8px;
+    border-radius: 50%;
+    font-size: 18px;
+}
+	  /* --- MEJORAS PARA VIEW-SETUP --- */
+#view-setup h2 {
+    color: var(--primary);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 25px;
+    letter-spacing: -0.5px;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: black;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    text-transform: uppercase;
+}
+
+.input-group input {
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+    padding: 12px 15px;
+}
+
+.input-group input:focus {
+    border-color: var(--primary-light);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+	  #conf-col{
+		  border: 1px solid gray;
+		  border-radius: 14px;
+	  }
+	  #conf-prof{
+		  border: 1px solid gray;
+		  border-radius: 14px;
+	  }
+	  #conf-grad{
+		  border: 1px solid gray;
+		  border-radius: 14px;
+	  }
+	  #conf-curs{
+		  border: 1px solid gray;
+		  border-radius: 14px;
+	  }
+.setup-grid {
+    display: grid; 
+    grid-template-columns: 1fr; 
+    gap: 5px;
+}
+
+@media (min-width: 600px) {
+    .setup-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+}
+
+
+
+/* Asegurar que la App principal también tenga un efecto al mostrarse */
+.app-visible {
+    display: block !important;
+}	  
+/* --- ANIMACIONES DE TRANSICIÓN CORREGIDAS --- */
+@keyframes shrinkOut {
+    0% { transform: scale(1); opacity: 1; filter: blur(0px); }
+    100% { transform: scale(0.6); opacity: 0; filter: blur(8px); } /* Encoge más al salir */
+}
+
+@keyframes growIn {
+    0% { transform: scale(0.6); opacity: 0; filter: blur(8px); }   /* Empieza pequeño */
+    100% { transform: scale(1); opacity: 1; filter: blur(0px); }   /* Termina en su tamaño real */
+}
+
+.view-exit {
+    animation: shrinkOut 1.2s ease-in forwards !important;
+}
+
+.view-enter {
+    animation: growIn 1.2s ease-out forwards !important;
+}
+
+/* Base para que todas las secciones soporten el escalado desde el centro */
+section {
+    transform-origin: center center;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+}  
+	  
+</style>
+</head>
+<body>
+    <section id="view-registro" class="glass-card hidden" style="max-width: 400px; margin: auto;">
+    <h2>🚀 Configura tu Acceso</h2>
+    <p style="font-size: 13px; color: #64748b;">Crea una contraseña maestra para proteger tus datos en esta PC.</p>
+    
+    <input type="password" id="reg-pass" placeholder="Nueva Contraseña" style="margin-top:10px;">
+    <input type="password" id="reg-pass-confirm" placeholder="Confirmar Contraseña">
+    
+    <hr>
+    <p style="font-size: 13px; font-weight: 600;">Pregunta de Recuperación:</p>
+    <select id="reg-pregunta">
+        <option value="Mascota">¿Nombre de tu primera mascota?</option>
+        <option value="Ciudad">¿En qué ciudad naciste?</option>
+        <option value="Escuela">¿Nombre de tu primera escuela?</option>
+    </select>
+    <input type="text" id="reg-respuesta" placeholder="Tu respuesta secreta">
+    
+    <button onclick="registrarSistema()" class="btn btn-primary" style="width:100%; margin-top:15px;">Finalizar Configuración</button>
+</section>	
+   
+    <div id="login-screen">
+    <div class="glass-card" style="width: 90%; max-width: 350px; text-align: center;">
+        <div style="font-size: 3rem;">🔐</div>
+        <h2>Acceso Seguro</h2>
+        <input type="password" id="pass-input" placeholder="Contraseña" style="text-align: center; letter-spacing: 5px; margin-bottom: 15px;">
+        <button onclick="validarAcceso()" class="btn btn-primary" style="width: 100%;">Ingresar</button>
+        
+        <button onclick="irARegistro()" style="margin-top: 15px; background: #10b981; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; width: 100%;">Crear Nueva Contraseña</button>
+        
+        <button onclick="modalConfigPass()" style="margin-top: 15px; background: none; border: none; color: var(--primary); font-weight: bold; cursor: pointer; font-size: 0.8rem;">Cambiar Contraseña</button>
+        <button onclick="recuperarClave()" style="margin-top: 10px; background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.75rem; display: block; width: 100%;">¿Olvidaste tu contraseña?</button>
+    </div>
+</div>
+
+   <div id="splash-screen" class="hidden">
+    <div class="loader-content">
+        <div class="brand-title">SIA <span style="color: #4f46e5;">PRO</span></div>
+        
+        <div class="progress-rail">
+            <div class="progress-fill" id="circle-bar"></div>
+        </div>
+
+        <div class="status-row">
+            <span id="status-text">Iniciando sistema...</span>
+            <span id="load-val">0%</span>
+        </div>
+    </div>
+</div>
+
+    <div class="app-container" id="main-app">
+        <section id="view-home" class="glass-card" style="max-width: 500px; margin: auto; text-align: center;">
+        <div class="header-nav">
+        <span style="font-weight: 800; color: var(--primary);">I.E.</span>
+        <button onclick="logout()" class="btn btn-exit">❌ SALIR</button>
+    </div>
+    <h1>SIA <span style="color:var(--accent)">PRO</span></h1>
+    <p>Gestión Académica Oficial</p>
+    <div style="display: flex; flex-direction: column; gap: 10px; text-align: left;">
+        <select id="grado-select"></select>
+        <button onclick="entrarGrado()" class="btn btn-primary">Entrar al Sistema</button>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <button onclick="prepararActualizacion()" class="btn" style="background:#f59e0b; color:white;">Actualizar Info</button>
+            <button onclick="eliminarGrado()" class="btn" style="background:#ef4444; color:white;">Eliminar Inst.</button>
+        </div>
+
+        <button onclick="abrirCreador()" class="btn" style="background:#e2e8f0;">Crear Nuevo Colegio</button>
+    </div>
+</section>
+
+        <section id="view-setup" class="glass-card hidden" style="max-width: 600px; margin: 20px auto; padding: 30px;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <span style="font-size: 40px;">🏫</span>
+        <h2>Registro de Institución</h2>
+        <p style="color: #64748b; font-size: 14px; margin-top: -15px;">Complete los datos para configurar el entorno de trabajo</p>
+    </div>
+
+    <div class="setup-grid">
+        <div class="input-group">
+            <label>🏫 Institución Educativa</label>
+            <input type="text" id="conf-col" placeholder="Ej: Colegio San José">
+        </div>
+        <div class="input-group">
+            <label>👨‍🏫 Nombre del Docente</label>
+            <input type="text" id="conf-prof" placeholder="Nombre completo">
+        </div>
+        <div class="input-group">
+            <label>🎓 Grado y Sección</label>
+            <input type="text" id="conf-grad" placeholder="Ej: 5to A de Secundaria">
+        </div>
+        <div class="input-group">
+            <label>📚 Curso / Materia</label>
+            <input type="text" id="conf-curs" placeholder="Ej: Matemáticas">
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 12px;">
+        <button onclick="crearGrado()" class="btn btn-primary" style="height: 50px; font-size: 16px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);">
+            🚀 REGISTRAR E INGRESAR
+        </button>
+        <button onclick="show('view-home')" class="btn" style="background: rgba(0,0,0,0.05); color: #64748b; border: 1px solid #cbd5e1;">
+            Cancelar y volver
+        </button>
+    </div>
+</section>
+
+        <section id="view-asis" class="hidden">
+    <div class="glass-card" style="max-width: 900px; margin: auto;">
+        <div class="header-nav" style="border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; margin-bottom: 15px;">
+            <span style="font-weight: 800; color: var(--primary); font-size: 14px;">MODO ASISTENCIA</span>
+            <button onclick="logout()" class="btn btn-exit" style="padding: 4px 10px; font-size: 11px;">❌ SALIR</button>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <div class="header-wrapper">
+                <div id="asis-info" class="info-header-grid"></div>
+                <div style="min-width: 120px;">
+                    <label style="font-size: 0.65rem; font-weight: 800; display: block; margin-bottom: 2px; text-align: right;">FECHA:</label>
+                    <input type="date" id="fecha-input" onchange="renderAsistencia()" style="padding: 4px; font-size: 12px; border: 1px solid #cbd5e1;">
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; gap: 10px;">
+            <button onclick="modalAlumno()" class="btn btn-primary" style="flex:1;">➕ Estudiante</button>
+            <button onclick="verHistorial()" class="btn" style="background:#1e293b; color:white; flex:1;">📊 Historial</button>
+        </div>
+
+        <div class="table-container" style="margin-bottom: 15px; border: 1px solid #e2e8f0;">
+            <table>
+                <thead>
+                    <tr style="background: #f1f5f9;">
+                        <th class="name-col">Estudiante</th>
+                        <th>Asistencia</th>
+                        <th>Accs.</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-alumnos"></tbody>
+            </table>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button onclick="guardarAsistencia()" class="btn btn-save" style="margin-top: 0;">💾 GUARDAR ASISTENCIA</button>
+            <button onclick="show('view-home')" class="btn" style="background: none; color: #64748b; font-size: 12px;">⬅ Volver a Instituciones</button>
+        </div>
+    </div>
+</section>
+
+        <section id="view-history" class="glass-card hidden">
+           <div class="header-nav">
+    <span style="font-weight: 800; color: var(--primary);">REPORTE MENSUAL</span>
+    <button onclick="logout()" class="btn btn-exit">❌ SALIR</button>
+</div>
+            <div style="margin-bottom: 15px;">
+                <h2 style="margin: 0 0 10px 0;">📋 Reporte Mensual</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <select id="filtro-anio" onchange="verHistorial()"></select>
+                    <select id="filtro-mes" onchange="verHistorial()"></select>
+                </div>
+                <button onclick="generarPDF()" class="btn" style="width: 100%; margin-top: 10px; background: #dc2626; color: white;">
+                    📄 COPIA DE RESPALDO (PDF)
+                </button>
+                <button onclick="show('view-asis')" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Volver</button>
+            </div>
+            <div id="history-render" class="table-container"></div>
+        </section>
+    </div>
+
+    <div id="modal-alu" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:1000; backdrop-filter: blur(4px);">
+        <div class="glass-card" style="width:90%; max-width:400px;">
+            <h3 id="modal-title">Datos Estudiante</h3>
+            <input type="hidden" id="edit-index">
+            <input type="text" id="alumno-nombre" placeholder="Nombre completo" style="margin-bottom:15px;">
+            <input type="number" id="alumno-edad" placeholder="Edad" style="margin-bottom:15px;">
+            <div style="display:flex; gap:10px;">
+                <button onclick="procesarAlumno()" class="btn btn-primary" style="flex:1;">Guardar</button>
+                <button onclick="cerrarModal()" class="btn" style="flex:1; background:#64748b; color:white;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-pass" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:11000; backdrop-filter: blur(4px);">
+    <div class="glass-card" style="width:90%; max-width:400px;">
+        <h3>🔑 Configuración y Seguridad</h3>
+        
+        <p style="font-size: 11px; color: #64748b; margin-bottom: 5px;">CAMBIAR CONTRASEÑA:</p>
+        <input type="password" id="old-pass" placeholder="Clave Actual" style="margin-bottom:10px;">
+        <input type="password" id="new-pass" placeholder="Nueva Clave" style="margin-bottom:15px;">
+        <button onclick="actualizarPass()" class="btn btn-primary" style="width:100%; margin-bottom:20px;">Actualizar Clave</button>
+
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 15px;">
+        
+        <p style="font-size: 11px; color: #64748b; margin-bottom: 5px;">COPIAS DE SEGURIDAD (RESPALDO):</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+            <button onclick="exportarDatos()" class="btn" style="background:#0284c7; color:white;">📥 Exportar</button>
+            <button onclick="document.getElementById('import-file').click()" class="btn" style="background:#7c3aed; color:white;">📤 Importar</button>
+        </div>
+        <input type="file" id="import-file" accept=".json" onchange="importarDatos(event)" style="display:none;">
+
+        <button onclick="document.getElementById('modal-pass').classList.add('hidden')" class="btn" style="width:100%; background:#64748b; color:white;">Cerrar Ventana</button>
+    </div>
+</div>
+<div id="toast-respaldo">
+    <div class="toast-icon">📥</div>
+    <div>
+        <div style="font-size: 11px; opacity: 0.8; font-weight: 400;">SIA PRO Seguridad</div>
+        Recuerda exportar tu respaldo hoy.
+    </div>
+</div>
+	<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, doc, setDoc, getDoc, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBhhLwVTIyRHvDovyJeOiyBVCbDEaf9x14",
+  authDomain: "sia-pro-94ff3.firebaseapp.com",
+  projectId: "sia-pro-94ff3",
+  storageBucket: "sia-pro-94ff3.firebasestorage.app",
+  messagingSenderId: "392916536726",
+  appId: "1:392916536726:web:d3a0ee89725de1a4f921b7"
+  };
+
+  const app = window.initializeApp(firebaseConfig);
+window.db_nube = window.getFirestore(app);
+
+  // EXPORTAR AL OBJETO WINDOW PARA QUE TODO EL HTML LAS VEA
+  window.db_nube = db_nube;
+  window.doc = doc;
+  window.setDoc = setDoc;
+  window.getDoc = getDoc;
+
+  enableIndexedDbPersistence(db_nube).catch((err) => {
+      console.error("Error persistencia:", err.code);
+  });
+</script>
+    <script>
+		// Función para guardar con sincronización
+async function guardarDatosSincronizados() {
+    // 1. Guardar en LocalStorage (como siempre)
+    localStorage.setItem('sia_db', JSON.stringify(db));
+
+    // 2. Intentar subir a la Nube (Firebase)
+    try {
+        const passMatriz = document.getElementById('pass-matriz').value; // Usamos la clave como ID de documento
+        if (!passMatriz) return;
+
+        await setDoc(doc(window.db_nube, "usuarios", passMatriz), {
+            datos: db,
+            ultimaActualizacion: Date.now()
+        });
+        console.log("Sincronizado con la nube");
+    } catch (e) {
+        console.error("Error al sincronizar: ", e);
+        // Si no hay internet, Firebase lo subirá solo cuando vuelva la conexión
+    }
+}
+
+// Función para descargar datos al iniciar sesión
+async function cargarDatosDesdeNube() {
+    const passMatriz = document.getElementById('pass-login').value;
+    const docRef = doc(window.db_nube, "usuarios", passMatriz);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+        const datosNube = docSnap.data();
+        const datosLocales = JSON.parse(localStorage.getItem('sia_db'));
+
+        // Comparar cuál es más reciente
+        if (!datosLocales || datosNube.ultimaActualizacion > (datosLocales.fechaGuardado || 0)) {
+            if (confirm("Se encontraron datos más recientes en la nube. ¿Deseas cargarlos?")) {
+                db = datosNube.datos;
+                localStorage.setItem('sia_db', JSON.stringify(db));
+                actualizarSelectorGrados();
+                alert("Datos actualizados desde la nube.");
+            }
+        }
+    }
+}
+		// --- AL CARGAR LA PÁGINA ---
+// --- LÓGICA DE INICIO MODIFICADA ---
+window.onload = function() {
+    // Siempre mostramos el Login primero ahora
+    document.getElementById('login-screen').classList.remove('hidden');
+    
+    // Verificamos si ya existe configuración para cargarla en memoria
+    const configGuardada = localStorage.getItem('sia_config_v7');
+    if (configGuardada) {
+        config = JSON.parse(configGuardada);
+    }
+};
+
+// Función para el nuevo botón
+function irARegistro() {
+    // Verificamos si ya existe una clave para evitar duplicados accidentales
+    if(localStorage.getItem('sia_config_v7')) {
+        const confirmar = confirm("Ya existe una contraseña en este equipo. ¿Deseas crear una nueva? (Esto no borrará tus datos, pero cambiará la llave de acceso)");
+        if(!confirmar) return;
+    }
+    
+    // Ocultamos login y mostramos registro
+    document.getElementById('login-screen').classList.add('hidden');
+    show('view-registro');
+}
+
+// Ajuste en registrarSistema para que al finalizar vuelva al Login
+function registrarSistema() {
+    const p1 = document.getElementById('reg-pass').value;
+    const p2 = document.getElementById('reg-pass-confirm').value;
+    const resp = document.getElementById('reg-respuesta').value.trim().toLowerCase();
+
+    if(p1.length < 4) return alert("La contraseña debe tener al menos 4 caracteres");
+    if(p1 !== p2) return alert("Las contraseñas no coinciden");
+    if(!resp) return alert("Debes escribir una respuesta de recuperación");
+
+    config = {
+        pass: p1,
+        pregunta: document.getElementById('reg-pregunta').value,
+        respuesta: resp
+    };
+    
+    localStorage.setItem('sia_config_v7', JSON.stringify(config));
+    alert("✅ Configuración guardada exitosamente.");
+    
+    // Volver al login de forma fluida
+    document.getElementById('view-registro').classList.add('hidden');
+    document.getElementById('login-screen').classList.remove('hidden');
+}
+
+function recuperarClave() {
+    if (!config.pregunta) return alert("No hay datos de recuperación configurados.");
+    
+    const r = prompt(`Recuperación de Cuenta\nPregunta: ${config.pregunta}\nEscribe tu respuesta:`).trim().toLowerCase();
+    
+    if (r === config.respuesta) {
+        alert(`🔓 Tu contraseña es: ${config.pass}`);
+    } else {
+        alert("❌ Respuesta incorrecta.");
+    }
+}
+        let db = JSON.parse(localStorage.getItem('sia_total_v7')) || {};
+        let config = JSON.parse(localStorage.getItem('sia_config_v7')) || { pass: "1234" };
+		// --- CENTRAL DE SEGURIDAD (NUEVA FUNCIÓN) ---
+function verificarCredenciales(callback) {
+    const validacion = prompt("🔐 Acción Protegida\nIngrese su contraseña principal para continuar:");
+    if (validacion === null) return; 
+    if (validacion === config.pass) {
+        callback();
+    } else {
+        alert("❌ Contraseña incorrecta. Acceso denegado.");
+    }
+}
+
+// --- FUNCIONES PROTEGIDAS (REEMPLAZAR LAS ANTERIORES) ---
+function prepararActualizacion() {
+    const sel = document.getElementById('grado-select').value;
+    if (!sel) return alert("⚠️ Seleccionar institución");
+    verificarCredenciales(() => {
+        modoEdicion = true;
+        const data = db[sel];
+        document.getElementById('conf-col').value = data.meta.col;
+        document.getElementById('conf-prof').value = data.meta.prof;
+        document.getElementById('conf-grad').value = sel;
+        document.getElementById('conf-grad').disabled = true;
+        document.getElementById('conf-curs').value = data.meta.cur;
+        document.getElementById('view-setup').querySelector('h2').innerText = "🔄 Actualizar Institución";
+        show('view-setup');
+    });
+}
+
+function eliminarGrado() {
+    const sel = document.getElementById('grado-select').value;
+    if (!sel) return alert("⚠️ Seleccionar institución");
+    verificarCredenciales(() => {
+        if (confirm(`⚠️ ¿ELIMINAR TODO?\nSe borrarán permanentemente los datos de "${sel}".`)) {
+            delete db[sel];
+            save();
+            alert("🗑️ Institución eliminada");
+        }
+    });
+}
+
+function editarAlu(i) {
+    verificarCredenciales(() => {
+        const alu = db[gradoActual].alumnos[i];
+        document.getElementById('edit-index').value = i;
+        document.getElementById('alumno-nombre').value = alu.n;
+        document.getElementById('alumno-nombre').dataset.oldName = alu.n;
+        document.getElementById('alumno-edad').value = alu.e;
+        document.getElementById('modal-title').innerText = "Editar Estudiante";
+        document.getElementById('modal-alu').classList.remove('hidden');
+    });
+}
+
+function borrarAlu(i) {
+    verificarCredenciales(() => {
+        if(confirm("¿Estás seguro de eliminar a este estudiante y su historial?")) { 
+            db[gradoActual].alumnos.splice(i,1); 
+            save(); 
+            renderAsistencia(); 
+        }
+    });
+}
+        const nombresDias = ["DO", "LU", "MA", "MI", "JU", "VI", "SA"];
+
+  async function validarAcceso() {
+    const passInput = document.getElementById('pass-input').value;
+    if (!passInput) return alert("Por favor, ingresa la contraseña.");
+
+    // 1. Intentar buscar en la Nube (Firebase) si está configurado
+    if (window.db_nube) {
+        try {
+            const docRef = window.doc(window.db_nube, "usuarios", passInput);
+            const docSnap = await window.getDoc(docRef);
+
+            if (docSnap.exists()) {
+                const datosNube = docSnap.data();
+                db = datosNube.datos;
+                config.pass = passInput;
+                localStorage.setItem('sia_total_v7', JSON.stringify(db));
+                localStorage.setItem('sia_config_v7', JSON.stringify(config));
+                
+                entrarAlSistema();
+                return; 
+            }
+        } catch (e) {
+            console.log("Modo local...");
+        }
+    }
+
+    // 2. Validación Local
+    if (passInput === config.pass) {
+        entrarAlSistema();
+    } else {
+        alert("Contraseña incorrecta.");
+    }
+}
+
+// Función auxiliar para limpiar el código
+function entrarAlSistema() {
+    // Ocultar pantalla de login
+    document.getElementById('login-screen').classList.add('hidden');
+    
+    // Iniciar la barra de carga (Splash Screen)
+    iniciarProgressBar(); 
+    
+    // Actualizar los selectores de datos
+    updateGradoSelect();
+}
+
+   function iniciarProgressBar() {
+    const splash = document.getElementById('splash-screen');
+    const fill = document.getElementById('circle-bar');
+    const val = document.getElementById('load-val');
+    const statusText = document.getElementById('status-text');
+
+    // 1. Resetear estados visuales inmediatamente
+    splash.style.display = 'flex';
+    splash.style.opacity = '1';
+    splash.style.visibility = 'visible';
+    splash.classList.remove('hidden');
+    
+    // 2. Resetear la barra
+    let progress = 0;
+    fill.style.width = "0%";
+    val.innerText = "0%";
+    statusText.innerText = "Iniciando sistema...";
+
+    const mensajes = [
+        "Cargando módulos de seguridad...",
+        "Estableciendo conexión local...",
+        "Sincronizando registros...",
+        "Preparando interfaz..."
+    ];
+
+    // Usamos un pequeño delay para asegurar que el navegador renderice el Splash
+    setTimeout(() => {
+        const interval = setInterval(() => {
+            progress++;
+            
+            fill.style.width = progress + "%";
+            val.innerText = progress + "%";
+
+            if (progress === 20) statusText.innerText = mensajes[0];
+            if (progress === 50) statusText.innerText = mensajes[1];
+            if (progress === 80) statusText.innerText = mensajes[2];
+            if (progress === 95) statusText.innerText = mensajes[3];
+
+            if(progress >= 100) {
+                clearInterval(interval);
+                
+                // Efecto de salida
+                splash.style.opacity = "0";
+                
+                setTimeout(() => {
+                    splash.classList.add('hidden');
+                    splash.style.display = 'none'; // Asegura que no bloquee clics
+                    
+                    // Mostrar la app principal
+                    const mainApp = document.getElementById('main-app');
+                    mainApp.classList.add('app-visible');
+                    
+                    // Ejecutar funciones de carga de datos
+                    if (typeof updateGradoSelect === "function") updateGradoSelect();
+                    if (typeof cargarFiltrosHistorial === "function") cargarFiltrosHistorial();
+                }, 400); 
+            }
+        }, 40); // Velocidad un poco más rápida para mejor UX
+    }, 50); 
+}
+        function modalConfigPass() { document.getElementById('modal-pass').classList.remove('hidden'); }
+        function actualizarPass() {
+    const oldP = document.getElementById('old-pass').value;
+    const newP = document.getElementById('new-pass').value;
+    
+    if(oldP === config.pass && newP.length > 0) {
+        // Actualizamos la contraseña en el objeto
+        config.pass = newP;
+        
+        // GUARDADO CRÍTICO: Guardamos el objeto completo en la memoria del navegador
+        localStorage.setItem('sia_config_v7', JSON.stringify(config));
+        
+        alert("✅ Contraseña actualizada correctamente");
+        document.getElementById('modal-pass').classList.add('hidden');
+        
+        // Limpiamos los campos del modal
+        document.getElementById('old-pass').value = "";
+        document.getElementById('new-pass').value = "";
+    } else {
+        alert("❌ La contraseña actual es incorrecta o la nueva está vacía");
+    }
+}
+   function show(id) {
+    const currentView = document.querySelector('section:not(.hidden)');
+    const nextView = document.getElementById(id);
+
+    if (!currentView) {
+        nextView.classList.remove('hidden');
+        return;
+    }
+    if (currentView.id === id) return;
+
+    document.body.style.pointerEvents = "none";
+
+    currentView.classList.remove('view-enter');
+    currentView.classList.add('view-exit');
+
+    // --- CAMBIO AQUÍ: Esperar 1200ms (1.2 segundos) ---
+    setTimeout(() => {
+        currentView.classList.add('hidden');
+        currentView.classList.remove('view-exit');
+
+        nextView.classList.remove('hidden');
+        nextView.classList.remove('view-exit');
+        nextView.classList.add('view-enter');
+
+        // --- CAMBIO AQUÍ: Tiempo para limpiar la animación de entrada ---
+        setTimeout(() => {
+            nextView.classList.remove('view-enter');
+            document.body.style.pointerEvents = "auto";
+        }, 1200); // 1.2 segundos
+
+        if(id === 'view-home') { gradoActual = ""; }
+    }, 1100); // Un poquito menos que el total para que el traslape sea suave
+}
+        function updateGradoSelect() {
+            const sel = document.getElementById('grado-select');
+            sel.innerHTML = '<option value="">-- Seleccionar Institución --</option>';
+            Object.keys(db).forEach(g => {
+                let o = document.createElement('option'); o.value = g; o.textContent = `${db[g].meta.col} - ${g}`;
+                sel.appendChild(o);
+            });
+        }
+
+        function crearGrado() {
+            const g = document.getElementById('conf-grad').value.trim(), c = document.getElementById('conf-col').value.trim();
+            if(!g || !c) return alert("Faltan datos");
+            db[g] = { meta: { col: c, prof: document.getElementById('conf-prof').value, cur: document.getElementById('conf-curs').value }, alumnos: [], asistencias: {} };
+            gradoActual = g; save(); entrarGrado();
+        }
+
+ // Actualiza esta parte específica dentro de entrarGrado()
+function entrarGrado() {
+    const selector = document.getElementById('grado-select');
+    gradoActual = selector.value; 
+
+    if(!gradoActual) {
+        alert("Por favor, selecciona una institución");
+        return;
+    }
+
+    const m = db[gradoActual].meta;
+    // MODIFICACIÓN AQUÍ: Separamos Curso y Grado en líneas distintas
+    document.getElementById('asis-info').innerHTML = `
+        <div><b>Colegio:</b> ${m.col}</div>
+        <div><b>Docente:</b> ${m.prof}</div>
+        <div><b>Curso:</b> ${m.cur}</div>
+        <div><b>Grado:</b> ${gradoActual}</div>
+    `;
+
+    document.getElementById('fecha-input').valueAsDate = new Date();
+    renderAsistencia(); 
+    
+    show('view-asis'); 
+}
+function crearGrado() {
+    const g = document.getElementById('conf-grad').value.trim();
+    const c = document.getElementById('conf-col').value.trim();
+    
+    if(!g || !c) return alert("Faltan datos");
+
+    // Guardar en la base de datos
+    db[g] = { 
+        meta: { 
+            col: c, 
+            prof: document.getElementById('conf-prof').value, 
+            cur: document.getElementById('conf-curs').value 
+        }, 
+        alumnos: [], 
+        asistencias: {} 
+    };
+
+    // Actualizamos la variable global con el nuevo grado
+    gradoActual = g; 
+    save(); 
+    
+    // Forzamos la actualización del select para que incluya el nuevo y lo seleccione
+    updateGradoSelect();
+    document.getElementById('grado-select').value = g;
+    
+    entrarGrado();
+}
+
+
+  function renderAsistencia() {
+    const fecha = document.getElementById('fecha-input').value;
+    const lista = document.getElementById('lista-alumnos');
+    lista.innerHTML = "";
+    
+    const fechaObj = new Date(fecha + "T12:00:00");
+    const mesActual = fechaObj.getMonth();
+    const anioActual = fechaObj.getFullYear();
+    const registroHoy = db[gradoActual].asistencias[fecha] || {};
+
+    db[gradoActual].alumnos.forEach((alu, i) => {
+        // Cálculo de faltas en el mes
+        let faltasMes = 0;
+        Object.keys(db[gradoActual].asistencias).forEach(fKey => {
+            const fBusqueda = new Date(fKey + "T12:00:00");
+            if (fBusqueda.getMonth() === mesActual && fBusqueda.getFullYear() === anioActual) {
+                if (db[gradoActual].asistencias[fKey][alu.n] === 'a') {
+                    faltasMes++;
+                }
+            }
+        });
+
+        // Lógica de estrellas
+        let estrellasVerdes = 0;
+        if (faltasMes === 0) estrellasVerdes = 5;
+        else if (faltasMes === 1) estrellasVerdes = 4;
+        else if (faltasMes === 2) estrellasVerdes = 3;
+        else if (faltasMes === 3) estrellasVerdes = 2;
+        else estrellasVerdes = 1;
+
+        // Tooltip con descripción
+        const desc = `Sistema de Méritos: Este mes tienes ${faltasMes} faltas. Para mantener tus 5 estrellas, no debes faltar ninguna vez. ¡Cada falta resta una estrella!`;
+
+        let htmlEstrellas = `<div class="ranking-estrellas" title="${desc}" style="display: inline-block; margin-left: 10px; cursor: help;">`;
+        for (let s = 1; s <= 5; s++) {
+            let color = (s <= estrellasVerdes) ? '#10b981' : '#cbd5e1'; 
+            htmlEstrellas += `<span style="color: ${color}; font-size: 14px;">★</span>`;
+        }
+        htmlEstrellas += '</div>';
+
+        const st = registroHoy[alu.n] || "";
+        lista.innerHTML += `<tr>
+            <td class="name-col">
+                <div style="display: flex; align-items: center; justify-content:建设; justify-content: space-between;">
+                    <span>${alu.n}</span>
+                    ${htmlEstrellas}
+                </div>
+            </td>
+            <td><div class="asistencia-options">
+                <label class="opt-p"><input type="radio" name="at-${i}" value="p" ${st==='p'?'checked':''}> P</label>
+                <label class="opt-a"><input type="radio" name="at-${i}" value="a" ${st==='a'?'checked':''}> A</label>
+                <label class="opt-t"><input type="radio" name="at-${i}" value="t" ${st==='t'?'checked':''}> T</label>
+            </div></td>
+            
+<td>
+    <button onclick="enviarReporteIndividual(${i})" style="border:none; background:none; cursor:pointer; padding: 0;" title="Enviar Reporte">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" style="width:20px; height:20px; vertical-align:middle;">
+    </button>
+    <button onclick="editarAlu(${i})" style="border:none; background:none; cursor:pointer; "title="Editar alumno">✏️</button> 
+    <button onclick="borrarAlu(${i})" style="border:none; background:none; cursor:pointer;">✖</button>
+</td>
+        </tr>`;
+    });
+}
+        function guardarAsistencia() {
+            const f = document.getElementById('fecha-input').value;
+            if(!f) return;
+            const ds = new Date(f + "T12:00:00").getDay();
+            if (ds === 0 || ds === 6) return alert("🚫 Sábados y Domingos no se registra asistencia");
+            let hoy = {};
+            db[gradoActual].alumnos.forEach((alu, i) => {
+                const r = document.querySelector(`input[name="at-${i}"]:checked`);
+                if(r) hoy[alu.n] = r.value;
+            });
+            db[gradoActual].asistencias[f] = hoy;
+            save(); alert("✅ Guardado");
+        }
+
+        // HISTORIAL
+       function verHistorial() {
+    const anio = parseInt(document.getElementById('filtro-anio').value);
+    const mes = parseInt(document.getElementById('filtro-mes').value);
+    const container = document.getElementById('history-render');
+    const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+    
+    // Encabezados de la tabla
+    let h1 = `<tr><th rowspan="2" class="name-col">Estudiante</th>`, h2 = `<tr>`;
+    let sC = 0;
+    
+    for(let d=1; d<=diasEnMes; d++) {
+        let fs = `${anio}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        let ds = new Date(fs + "T12:00:00").getDay();
+        if(ds !== 0 && ds !== 6) {
+            if(ds === 1 && d !== 1) sC = (sC + 1) % 5;
+            h1 += `<th class="week-${sC}">${nombresDias[ds]}</th>`;
+            h2 += `<th class="week-${sC}">${d}</th>`;
+        }
+    }
+    
+    let html = `<table><thead>${h1}</tr>${h2}</tr></thead><tbody>`;
+    
+    db[gradoActual].alumnos.forEach(alu => {
+        // --- LÓGICA DE ESTRELLAS PARA EL REPORTE ---
+        let faltasAlu = 0;
+        for(let d=1; d<=diasEnMes; d++) {
+            let fk = `${anio}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            if(db[gradoActual].asistencias[fk] && db[gradoActual].asistencias[fk][alu.n] === 'a') {
+                faltasAlu++;
+            }
+        }
+        
+        let estrellasNum = (faltasAlu === 0) ? 5 : (faltasAlu === 1) ? 4 : (faltasAlu === 2) ? 3 : (faltasAlu === 3) ? 2 : 1;
+        const tooltipText = `Ranking Mensual: ${faltasAlu} faltas. Meta: 0 faltas para 5 estrellas verdes.`;
+        
+        let estrellasHtml = `<div title="${tooltipText}" style="display:flex; gap:1px; cursor:help;">`;
+        for(let s=1; s<=5; s++) {
+            let color = (s <= estrellasNum) ? '#10b981' : '#cbd5e1';
+            estrellasHtml += `<span style="color:${color}; font-size:10px;">★</span>`;
+        }
+        estrellasHtml += `</div>`;
+
+        // Fila del alumno con nombre a la izquierda y estrellas a la derecha
+        html += `<tr>
+            <td class="name-col">
+                <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                    <span>${alu.n}</span>
+                    ${estrellasHtml}
+                </div>
+            </td>`;
+            
+        let sI = 0;
+        for(let d=1; d<=diasEnMes; d++) {
+            let fk = `${anio}-${String(mes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            let ds = new Date(fk + "T12:00:00").getDay();
+            if(ds !== 0 && ds !== 6) {
+                if(ds === 1 && d !== 1) sI = (sI + 1) % 5;
+                const st = (db[gradoActual].asistencias[fk] && db[gradoActual].asistencias[fk][alu.n]) || "";
+                let c = st==='p'?'<span class="badge badge-p">P</span>':st==='a'?'<span class="badge badge-a">A</span>':st==='t'?'<span class="badge badge-t">T</span>':'-';
+                html += `<td class="week-${sI}">${c}</td>`;
+            }
+        }
+        html += `</tr>`;
+    });
+    
+    container.innerHTML = html + "</tbody></table>";
+    show('view-history');
+}
+
+        // GESTIÓN ALUMNOS
+        function modalAlumno() { 
+            document.getElementById('modal-title').innerText = "Nuevo Estudiante";
+            document.getElementById('edit-index').value = "";
+            document.getElementById('alumno-nombre').value = "";
+            document.getElementById('alumno-edad').value = "";
+            document.getElementById('modal-alu').classList.remove('hidden'); 
+        }
+     // --- FUNCIÓN SALIR ---
+function logout() {
+    if(confirm("¿Cerrar sesión?")) {
+        // Ocultar app y mostrar login
+        document.getElementById('main-app').classList.remove('app-visible');
+        document.getElementById('login-screen').classList.remove('hidden');
+        // Resetear variables y campos
+        document.getElementById('pass-input').value = "";
+        gradoActual = "";
+        // Ocultar todas las secciones internas
+        document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+        document.getElementById('view-home').classList.remove('hidden');
+    }
+}
+
+// --- GESTIÓN DE ALUMNOS (CORREGIDA PARA NO BORRAR HISTORIAL) ---
+
+
+function procesarAlumno() {
+    const n = document.getElementById('alumno-nombre').value.trim();
+    const e = document.getElementById('alumno-edad').value;
+    const idx = document.getElementById('edit-index').value;
+    const oldName = document.getElementById('alumno-nombre').dataset.oldName;
+
+    if(!n || !e) return alert("Faltan datos");
+
+    if(idx === "") {
+        // Nuevo alumno
+        db[gradoActual].alumnos.push({ n, e });
+    } else {
+        // Edición de alumno existente
+        if (oldName && oldName !== n) {
+            // Transferir historial de asistencia del nombre viejo al nuevo
+            Object.keys(db[gradoActual].asistencias).forEach(fecha => {
+                if (db[gradoActual].asistencias[fecha][oldName]) {
+                    db[gradoActual].asistencias[fecha][n] = db[gradoActual].asistencias[fecha][oldName];
+                    delete db[gradoActual].asistencias[fecha][oldName];
+                }
+            });
+        }
+        db[gradoActual].alumnos[idx] = { n, e };
+    }
+
+    db[gradoActual].alumnos.sort((a,b) => a.n.localeCompare(b.n));
+    save(); 
+    renderAsistencia(); 
+    cerrarModal();
+}
+
+// --- GUARDADO DE ASISTENCIA (CORREGIDO PARA PRESERVAR HISTORIAL) ---
+function guardarAsistencia() {
+    const f = document.getElementById('fecha-input').value;
+    if(!f) return;
+    
+    const ds = new Date(f + "T12:00:00").getDay();
+    if (ds === 0 || ds === 6) return alert("🚫 Sábados y Domingos no se registra asistencia");
+
+    // Aseguramos que el objeto del día existe sin sobreescribir otros nombres
+    if (!db[gradoActual].asistencias[f]) db[gradoActual].asistencias[f] = {};
+
+    db[gradoActual].alumnos.forEach((alu, i) => {
+        const r = document.querySelector(`input[name="at-${i}"]:checked`);
+        if(r) {
+            db[gradoActual].asistencias[f][alu.n] = r.value;
+        }
+    });
+
+    save(); 
+    alert("✅ Asistencia sincronizada");
+}
+        
+        function cerrarModal() { document.getElementById('modal-alu').classList.add('hidden'); }
+      async function save() {
+    // Guardado local
+    localStorage.setItem('sia_total_v7', JSON.stringify(db));
+    updateGradoSelect();
+
+    // Guardado en la Nube (Firebase)
+    if (config.pass && window.db_nube) {
+        try {
+            await window.setDoc(window.doc(window.db_nube, "usuarios", config.pass), {
+                datos: db,
+                fecha: Date.now()
+            });
+            console.log("Sincronizado con la nube");
+        } catch (error) {
+            console.warn("Error al sincronizar: ", error);
+        }
+    }
+}
+
+        function cargarFiltrosHistorial() {
+            const sAnio = document.getElementById('filtro-anio'), sMes = document.getElementById('filtro-mes');
+            if(!sAnio) return;
+            const a = new Date().getFullYear();
+            for(let i=a-1; i<=a+1; i++) {
+                let o = document.createElement('option'); o.value=i; o.textContent=i;
+                if(i===a) o.selected=true; sAnio.appendChild(o);
+            }
+            ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"].forEach((m, i) => {
+                let o = document.createElement('option'); o.value=i; o.textContent=m;
+                if(i === new Date().getMonth()) o.selected=true;
+                sMes.appendChild(o);
+            });
+        }
+
+        // ==========================================
+        // NUEVA FUNCIÓN: GENERAR PDF CON ESTADÍSTICAS
+        // ==========================================
+       function generarPDF() {
+    const element = document.getElementById('history-render');
+    const anio = document.getElementById('filtro-anio').value;
+    const mesIdx = parseInt(document.getElementById('filtro-mes').value);
+    const mesTexto = document.getElementById('filtro-mes').options[mesIdx].text;
+    const m = db[gradoActual].meta;
+    const diasEnMes = new Date(anio, mesIdx + 1, 0).getDate();
+
+    // Calcular Estadísticas y Ranking para el PDF
+    let resumenHTML = `
+        <div style="margin-top: 30px;">
+            <h3 style="color: #4f46e5; border-bottom: 2px solid #4f46e5; padding-bottom: 5px;">RESUMEN ESTADÍSTICO Y RANKING</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px;">
+                <thead>
+                    <tr style="background: #f1f5f9;">
+                        <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">Estudiante / Ranking</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #059669;">Asistencias (P)</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #dc2626;">Faltas (A)</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #d97706;">Tardanzas (T)</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+    db[gradoActual].alumnos.forEach(alu => {
+        let p = 0, a = 0, t = 0;
+        for(let d=1; d<=diasEnMes; d++) {
+            let fk = `${anio}-${String(mesIdx+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            const st = (db[gradoActual].asistencias[fk] && db[gradoActual].asistencias[fk][alu.n]) || "";
+            if(st === 'p') p++;
+            else if(st === 'a') a++;
+            else if(st === 't') t++;
+        }
+
+        // Estrellas versión texto para el PDF
+        let eNum = (a === 0) ? 5 : (a === 1) ? 4 : (a === 2) ? 3 : (a === 3) ? 2 : 1;
+        let estrellasTexto = "";
+        for(let s=1; s<=5; s++) {
+            estrellasTexto += (s <= eNum) ? "★" : "☆";
+        }
+
+        resumenHTML += `
+            <tr>
+                <td style="padding: 6px; border: 1px solid #ddd; text-align: left;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <b>${alu.n}</b>
+                        <span style="color:#10b981; margin-left:10px;">${estrellasTexto}</span>
+                    </div>
+                </td>
+                <td style="padding: 6px; border: 1px solid #ddd;">${p}</td>
+                <td style="padding: 6px; border: 1px solid #ddd; background: ${a>0?'#fef2f2':''};">${a}</td>
+                <td style="padding: 6px; border: 1px solid #ddd;">${t}</td>
+            </tr>`;
+    });
+    resumenHTML += `</tbody></table></div>`;
+
+    const content = document.createElement('div');
+    content.style.padding = '20px';
+    content.style.backgroundColor = '#fff';
+    content.innerHTML = `
+        <div style="text-align: center; border-bottom: 3px solid #4f46e5; padding-bottom: 10px; margin-bottom: 20px;">
+            <h1 style="margin: 0; color: #4f46e5; font-size: 22px;">REPORTE DE ASISTENCIA MENSUAL</h1>
+            <p style="margin: 4px 0; font-size: 13px;"><b>Institución:</b> ${m.col} | <b>Docente:</b> ${m.prof}</p>
+            <p style="margin: 4px 0; font-size: 13px;"><b>Curso:</b> ${m.cur} | <b>Grado:</b> ${gradoActual}</p>
+            <p style="margin: 4px 0; font-size: 13px;"><b>Periodo:</b> ${mesTexto} ${anio}</p>
+        </div>
+        <div style="font-size: 8px;">${element.innerHTML}</div>
+        ${resumenHTML}
+        <div style="margin-top: 30px; text-align: right; font-size: 10px; color: #777; border-top: 1px solid #eee; padding-top: 10px;">
+            Sistema SIA PRO - Reporte Oficial generado el ${new Date().toLocaleString()}
+        </div>
+    `;
+
+    const opt = {
+        margin: 0.3,
+        filename: `SIA_PRO_Reporte_${gradoActual}_${mesTexto}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+    };
+
+    html2pdf().set(opt).from(content).save();
+}
+		// Variable para saber si estamos editando o creando
+let modoEdicion = false;
+
+function abrirCreador() {
+    modoEdicion = false;
+    document.getElementById('conf-grad').disabled = false; // El ID/Grado se puede escribir
+    document.getElementById('view-setup').querySelector('h2').innerText = "🏫 Nueva Institución";
+    // Limpiar campos
+    document.getElementById('conf-col').value = "";
+    document.getElementById('conf-prof').value = "";
+    document.getElementById('conf-grad').value = "";
+    document.getElementById('conf-curs').value = "";
+    show('view-setup');
+}
+
+
+		
+		
+
+
+
+// Modificamos tu función crearGrado para que sirva para ambos casos
+function crearGrado() {
+    const g = document.getElementById('conf-grad').value.trim();
+    const c = document.getElementById('conf-col').value.trim();
+    
+    if(!g || !c) return alert("Faltan datos");
+
+    if (modoEdicion) {
+        // Solo actualizamos la meta-información, mantenemos alumnos y asistencias
+        db[g].meta = { 
+            col: c, 
+            prof: document.getElementById('conf-prof').value, 
+            cur: document.getElementById('conf-curs').value 
+        };
+    } else {
+        // Crear nuevo registro
+        db[g] = { 
+            meta: { col: c, prof: document.getElementById('conf-prof').value, cur: document.getElementById('conf-curs').value }, 
+            alumnos: [], 
+            asistencias: {} 
+        };
+    }
+
+    gradoActual = g; 
+    save(); 
+    entrarGrado();
+}
+
+
+// --- FUNCIÓN PARA EXPORTAR CON CONTRASEÑA ---
+function exportarDatos() {
+    // 1. Solicitar contraseña antes de proceder
+    const validacion = prompt("🔐 Ingrese su contraseña actual para exportar el respaldo:");
+    
+    if (validacion === null) return; // Usuario canceló
+    if (validacion !== config.pass) return alert("❌ Contraseña incorrecta. Acceso denegado.");
+
+    const datos = localStorage.getItem('sia_total_v7');
+    if (!datos || datos === "{}") return alert("No hay datos para exportar");
+
+    const blob = new Blob([datos], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    
+    const fecha = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `RESPALDO_SIA_PRO_${fecha}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert("✅ Verificación exitosa. El archivo de respaldo se ha generado.");
+}
+
+// --- FUNCIÓN PARA IMPORTAR CON CONTRASEÑA ---
+function importarDatos(event) {
+    const archivo = event.target.files[0];
+    if (!archivo) return;
+
+    // 1. Solicitar contraseña antes de proceder
+    const validacion = prompt("🔐 Ingrese su contraseña actual para AUTORIZAR la importación:\n(Se reemplazarán todos los datos actuales)");
+    
+    if (validacion === null) {
+        event.target.value = "";
+        return;
+    }
+    
+    if (validacion !== config.pass) {
+        event.target.value = "";
+        return alert("❌ Contraseña incorrecta. Operación cancelada.");
+    }
+
+    const lector = new FileReader();
+    lector.onload = function(e) {
+        try {
+            const contenido = JSON.parse(e.target.result);
+            if (typeof contenido === 'object') {
+                db = contenido;
+                save();
+                alert("🚀 Datos importados correctamente. El sistema se reiniciará.");
+                location.reload(); 
+            } else {
+                throw new Error();
+            }
+        } catch (err) {
+            alert("❌ Error: El archivo no es un respaldo válido.");
+        }
+    };
+    lector.readAsText(archivo);
+}
+		// --- LÓGICA DE RECORDATORIO CADA 10 MINUTOS ---
+
+function mostrarRecordatorioRespaldo() {
+    const toast = document.getElementById('toast-respaldo');
+    
+    // Solo mostrar si el usuario ha iniciado sesión (hay una app visible)
+    if (document.getElementById('main-app').classList.contains('app-visible')) {
+        
+        // 1. Mostrar el mensaje
+        toast.classList.add('show');
+
+        // 2. Desaparecer automáticamente después de 5 segundos (5000 ms)
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 20000);
+    }
+}
+
+// Configurar el intervalo: 10 minutos = 10 * 60 * 1000 milisegundos
+setInterval(mostrarRecordatorioRespaldo, 600000); 
+
+// Opcional: Mostrar el primero a los 30 segundos de entrar para verificar que funciona
+setTimeout(mostrarRecordatorioRespaldo, 30000);
+		async function enviarReporteIndividual(idx) {
+    const alu = db[gradoActual].alumnos[idx];
+    const m = db[gradoActual].meta;
+    const fechaActual = document.getElementById('fecha-input').value;
+    
+    // Configurar fechas para el filtro mensual
+    const hoy = new Date(fechaActual + "T12:00:00");
+    const mesIdx = hoy.getMonth();
+    const anio = hoy.getFullYear();
+    const nombreMes = new Intl.DateTimeFormat('es-ES', { month: 'long'}).format(hoy);
+    
+    // --- CÁLCULO DE ASISTENCIAS ---
+    let p = 0; // Puntual
+    let a = 0; // Falta
+    let t = 0; // Tardanza
+
+    if (db[gradoActual].asistencias) {
+        Object.keys(db[gradoActual].asistencias).forEach(fKey => {
+            const fBusqueda = new Date(fKey + "T12:00:00");
+            // Filtramos solo las del mes y año actual
+            if (fBusqueda.getMonth() === mesIdx && fBusqueda.getFullYear() === anio) {
+                const estado = db[gradoActual].asistencias[fKey][alu.n];
+                if (estado === 'p') p++;
+                else if (estado === 'a') a++;
+                else if (estado === 't') t++;
+            }
+        });
+    }
+
+    // 2. GENERAR EL PDF (Diseño visual)
+    const tempDiv = document.createElement('div');
+    tempDiv.style.padding = "20px";
+    tempDiv.innerHTML = `
+        <div style="border: 2px solid #25D366; border-radius: 10px; padding: 20px; font-family: sans-serif; color: #333;">
+            <h2 style="text-align:center; color:#075E54; margin-bottom:5px;">SIA PRO - INFORME</h2>
+            <p style="text-align:center; margin-top:0; font-size:12px;">${m.col}</p>
+            <hr>
+            <p><b>Estudiante:</b> ${alu.n}</p>
+            <p><b>Mes:</b> ${nombreMes.toUpperCase()} ${anio}</p>
+            <div style="display:flex; justify-content:space-around; text-align:center; margin-top:20px;">
+                <div style="color:green;"><b>Asistencias (P)</b><br><span style="font-size:20px;">${p}</span></div>
+                <div style="color:red;"><b>Faltas (A)</b><br><span style="font-size:20px;">${a}</span></div>
+                <div style="color:orange;"><b>Tardanzas (T)</b><br><span style="font-size:20px;">${t}</span></div>
+            </div>
+            <p style="margin-top:30px; font-size:10px; text-align:center; color:gray;">Generado por: Prof. ${m.prof}</p>
+        </div>
+    `;
+
+    const opt = {
+        margin: 0.5,
+        filename: `Reporte_${alu.n}.pdf`,
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // Descarga el PDF
+    html2pdf().set(opt).from(tempDiv).save();
+
+    // 3. MENSAJE DE WHATSAPP (Con los iconos de colores)
+    const mensaje = encodeURIComponent(
+        `*SIA PRO - INFORME DE ASISTENCIA*\n\n` +
+        `Estimado representante, adjunto el reporte de *${alu.n}* del mes de *${nombreMes}*.\n\n` +
+        `✅ *Asistencias:* ${p}\n` +
+        `❌ *Faltas:* ${a}\n` +
+        `⚠️ *Tardanzas:* ${t}\n\n` +
+        `_Nota: El PDF detallado se ha descargado en mi equipo para ser enviado._`
+    );
+    
+    // Abrir WhatsApp tras un pequeño delay
+    setTimeout(() => {
+        window.open(`https://api.whatsapp.com/send?text=${mensaje}`, '_blank');
+    }, 1200);
+}
+    </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('SIA PRO PWA: Registrado con éxito'))
+        .catch(err => console.log('SIA PRO PWA: Error al registrar', err));
+    });
+  }
+</script>
+</body>
+
+</html>
+
+
